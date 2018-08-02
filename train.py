@@ -126,7 +126,7 @@ with tf.variable_scope('vgg_16/fc8'):
                                  scope='conv_pool3')
 #28x28x42
 
-upsampled_logits = upsampled_logits + aux_logits_8
+upsampled_logits = upsampled_logits + aux_logits_8s
 #28x28x84
 
 upsample_filter_np_x8 = bilinear_upsample_weights(upsample_factor,
