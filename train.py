@@ -106,16 +106,6 @@ upsampled_logits = tf.nn.conv2d_transpose(logits, upsample_filter_tensor_x2,
 
 upsampled_logits = upsampled_logits + aux_logits_16s
 #14x14x21
- # Perform the upsampling 14x14x21
-upsample_filter_np_x2 = bilinear_upsample_weights(2,number_of_classes)
-
-upsample_filter_tensor_x2 = tf.Variable(upsample_filter_np_x2, name='vgg_16/fc8/t_conv_x2_2')
-
-upsampled_logits = tf.nn.conv2d_transpose(logits, upsample_filter_tensor_x2,
-                                          output_shape=tf.shape(aux_logits_16s),
-                                          strides=[1, 2, 2, 1],
-                                          padding='SAME')
-#28x28x21
 
 #28x28x256
 pool3_feature = end_points['vgg_16/pool3']
@@ -125,6 +115,17 @@ with tf.variable_scope('vgg_16/fc8'):
                                  weights_initializer=tf.zeros_initializer,
                                  scope='conv_pool3')
 #28x28x21
+# Perform the upsampling 14x14x21
+upsample_filter_np_x2 = bilinear_upsample_weights(2,number_of_classes)
+
+upsample_filter_tensor_x2 = tf.Variable(upsample_filter_np_x2, name='vgg_16/fc8/t_conv_x2_2')
+
+upsampled_logits = tf.nn.conv2d_transpose(upsampled_logits, upsample_filter_tensor_x2,
+                                          output_shape=tf.shape(aux_logits_8s),
+                                          strides=[1, 2, 2, 1],
+                                          padding='SAME')
+
+#28x28x21
 
 upsampled_logits = upsampled_logits + aux_logits_8s
 #28x28x21
@@ -133,7 +134,7 @@ upsample_filter_np_x8 = bilinear_upsample_weights(upsample_factor,
                                                    number_of_classes)
 
 upsample_filter_tensor_x8 = tf.Variable(upsample_filter_np_x8, name='vgg_16/fc8/t_conv_x8')
-upsampled_logits = tf.nn.conv2d_transpose(upsampled_logits, upsample_filter_tensor_x2,
+upsampled_logits = tf.nn.conv2d_transpose(upsampled_logits, upsample_filter_tensor_x8,
                                           output_shape=upsampled_logits_shape,
                                           strides=[1, upsample_factor, upsample_factor, 1],
                                           padding='SAME')
